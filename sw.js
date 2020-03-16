@@ -21,11 +21,10 @@ this.addEventListener('fetch', event => {
 	let url = new URL(event.request.url)
 	if (url.origin !== location.origin) return
 	if (/^\/-/.test(url.pathname)) return
-	
-	console.info(event.request.url, CACHE_NAME)
+
 	let r = location.pathname.match(/\.(\w+$)/)
-	//Для всех запросов js, tpl и css дбавляем t
-	if(!r || !~['tpl','js','css', 'html'].indexOf(r[1].toLowerCase()) ) return
+	//Для всех запросов /, js, tpl и css дбавляем t
+	if (r && !~['tpl','js','css', 'html'].indexOf(r[1].toLowerCase()) ) return
    	console.log(event.request.url, CACHE_NAME)
 	url = event.request.url
 	url = url + (~url.indexOf('?')? '&' : '?') + 't=' + CACHE_NAME
