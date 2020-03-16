@@ -10,4 +10,4 @@ if (is_file('.git/index')) {
 }
 header('Content-type: application/javascript');
 echo 'const CACHE_NAME = '.$time."\n";
-Path::req('sw.js');
+Path::req('-sw/sw.js');
