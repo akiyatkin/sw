@@ -1,0 +1,59 @@
+<head>
+	<script type="module">	
+		(async () => {
+			if (!navigator.serviceWorker) return
+			window.addEventListener('load', async () => {
+				let worker = await navigator.serviceWorker.register('/-sw',{ scope:'/' });
+		    })
+		})()
+	</script>
+	<script src="/-collect/?js"></script>
+</head>
+<body>
+<div id="test">
+	<img width="100" src="/images/logo.png">
+	<span class="a showTransport">Показать</span>
+	<div class="showres"></div>
+</div>
+</body>
+
+
+<script async type="module">
+	(async () => {
+
+		let Load = (await import('/vendor/akiyatkin/load/Load.js')).default
+		let CDEK = await Load.on('import-default', '/vendor/akiyatkin/cdek/CDEK.js')
+		let CDN = await Load.on('import-default', '/vendor/akiyatkin/load/CDN.js')
+		await CDN.load('jquery')
+
+		let div = document.getElementById('test')
+		let cls = cls => div.getElementsByClassName(cls)[0]
+		let btn = cls('showTransport')
+		let showres = cls('showres')
+		btn.addEventListener('click', async () => (await CDEK.getCartWidjet()).open())
+
+		
+		await CDN.load('magnific-popup')
+		
+
+		let show = async (showres, wat) => {
+			
+			showres.innerHTML = window.Template.parse('-cdek/button.tpl', wat, 'showres')
+			$(div).find('a.gallery').magnificPopup({
+				type: 'image',
+				gallery:{
+					enabled:true
+				}
+			})
+		}		
+		
+		CDEK.handler('calc', (wat) => {
+			show(showres, wat)
+			Session.set('orders.my.cdek', wat)
+		})
+
+		
+		show(showres, Session.get('orders.my.cdek'))
+		
+	})()
+</script>

@@ -1,0 +1,6 @@
+{
+	"name":"akiyatkin/sw",
+	"require":{
+		"infrajs/path":"~1"
+	}
+}
