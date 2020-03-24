@@ -12,16 +12,39 @@ this.addEventListener('fetch', event => {
 	let url = new URL(event.request.url)
 	if (url.origin !== location.origin) return
 	if (/^\/-/.test(url.pathname)) return
+	if (/[&\?]t=\d+/.test(url.search)) return
+
 	let r = url.pathname.match(/\.(\w+$)/)
-	//Для всех запросов js, tpl и css дбавляем t
-	if (!r || !~['tpl','js','css', 'html'].indexOf(r[1].toLowerCase()) ) return
-   	console.log(event.request.url, CACHE_NAME)
-	url = event.request.url
-	url = url + (~url.indexOf('?')? '&' : '?') + 't=' + CACHE_NAME
-	let options = {}
-	if (event.request.mode == 'no-cors') {
-		options['mode'] = 'no-cors'	
+	/*
+		Пользователь меняет: корзину, личный кабинет - no-store)
+		Администратор меняет: json, php - not-modified)
+		Программист меняет: index.tpl, js, css и / - public с версией в адресе
+		Никто не меняет: jpg, png, gif ... - public без версии в адресе
+	*/
+	if (r && !~['tpl','js','css'].indexOf(r[1].toLowerCase()) ) return
+   	
+	const {
+		cache, credentials, headers, integrity, 
+		method, redirect, referrer, referrerPolicy
+	} = event.request
+
+	let options = { 
+		cache, credentials, headers, integrity, 
+		method, redirect, referrer, referrerPolicy
 	}
+
+	url = event.request.url
+	url = url + (~url.indexOf('?') ? '&' : '?') + 't=' + CACHE_NAME
+	
+	if (event.request.mode == 'no-cors') {
+		mode = 'no-cors'	
+	} else {
+		mode = null
+	}
+	
 	let request = new Request(url, options)
+
+	console.log(event.request.url, CACHE_NAME)
+
 	event.respondWith(fetch(request))
 });
