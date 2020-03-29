@@ -1,5 +1,6 @@
 <?php
 use infrajs\path\Path;
+use infrajs\access\Access;
 
 if (is_file('.git/index')) {
 	$time = filemtime('.git/index');
@@ -8,6 +9,9 @@ if (is_file('.git/index')) {
 } else {
 	$time = filemtime(__FILE__);
 }
+
+Access::modified($time);
+
 header('Content-type: application/javascript');
 echo 'const CACHE_NAME = '.$time."\n";
 Path::req('-sw/sw.js');
