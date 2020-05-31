@@ -28,6 +28,8 @@ this.addEventListener('fetch', event => {
 		method, redirect, referrer, referrerPolicy
 	} = event.request
 
+	//let cache = 'default'
+
 	let options = { 
 		cache, credentials, headers, integrity, 
 		method, redirect, referrer, referrerPolicy
@@ -45,6 +47,7 @@ this.addEventListener('fetch', event => {
 	let request = new Request(url, options)
 
 	//console.log(event.request.url, CACHE_NAME)
-
-	event.respondWith(fetch(request))
+	let responce = fetch(request)
+	console.log(responce)
+	event.respondWith(responce)
 });
