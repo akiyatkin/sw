@@ -48,6 +48,5 @@ this.addEventListener('fetch', event => {
 
 	//console.log(event.request.url, CACHE_NAME)
 	let responce = fetch(request)
-	console.log(responce)
 	event.respondWith(responce)
 });
