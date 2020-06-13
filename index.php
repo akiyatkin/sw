@@ -8,6 +8,7 @@ $admin_time = Access::adminTime();
 
 $my_time = max(filemtime(__FILE__), filemtime(__DIR__.'/sw.js'), filemtime(__DIR__.'/infra.js'));
 
+header('Cache-Control: no-cache, max-age=0, must-revalidate');
 header('Service-Worker-Allowed: /');
 header('Content-type: application/javascript');
 
