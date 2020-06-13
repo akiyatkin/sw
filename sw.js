@@ -1,28 +1,56 @@
-this.addEventListener('install', async (event) => {
-	console.log('install', CACHE_NAME)
+
+this.addEventListener('install', event => {
+	console.log('SW install', ADMIN_TIME)
+	//Мы не кэшируем в sw, а лишь подставляем актуальную метку в fetch. И метку можно сразу актуальную подставлять, потому что старая метка всё равно не гарантирует старый кэш то есть в любом случае может быть работа файлов разных версий. Так уж лучше сразу.
+  	this.skipWaiting();
 })
 
-this.addEventListener('activate', async (event) => {
-	console.log('activate', CACHE_NAME)
-});
+this.addEventListener('activate', event => {
+	console.log('SW activate', ADMIN_TIME)
+	event.waitUntil( this.clients.claim().then( async () => {
+		return this.clients.matchAll().then(clientList => {
+			clientList.forEach(client => {
+				client.postMessage({ADMIN_TIME, UPDATE_TIME})
+			})
+		})
+	}))
+})
+
+
+this.addEventListener('message', event => {
+	if (ADMIN_TIME >= event.data.ADMIN_TIME && UPDATE_TIME >= event.data.UPDATE_TIME) return
+
+	ADMIN_TIME = event.data.ADMIN_TIME
+	UPDATE_TIME = event.data.UPDATE_TIME
+
+	event.waitUntil(this.clients.matchAll().then(clientList => {
+		clientList.forEach(client => {
+			client.postMessage(event.data)
+		})
+	}))
+})
 
 this.addEventListener('fetch', event => {
 	//Только с сервера, только GET, и без -
 	if (event.request.method !== 'GET') return
+	
 	let url = new URL(event.request.url)
+	
+	//??
 	if (url.origin !== location.origin) return
-	//if (/^\/-/.test(url.pathname)) return
-	if (/[&\?]t=\d+/.test(url.search)) return
+	
+	dyn = false
+	let ext = url.pathname.match(/\.(\w+$)/)
+	if (!ext || ext == 'php') dyn = true
+	else if (/.*\/$/.test(url.pathname)) dyn = true
+	//Дефаулт public выставляется только для динамики системы
+	if (ext == 'php' && !/^\/-/.test(url.pathname)) return
 
-	//let r = url.pathname.match(/\.(\w+$)/)
-	/*
-		Пользователь меняет: корзину, личный кабинет - no-store)
-		Администратор меняет: json, php - not-modified)
-		Программист меняет: index.tpl, js, css и / - public с версией в адресе
-		Никто не меняет: jpg, png, gif ... - public без версии в адресе
-	*/
-	//if (r && !~['tpl','js','css'].indexOf(r[1].toLowerCase()) ) return
-   	
+	//Если есть метка t, то пропускаем
+	if (/[&\?]t[=&\?]/.test(url.search)) return
+	if (/[&\?]t$/.test(url.search)) return
+
+
 	const {
 		cache, credentials, headers, integrity, 
 		method, redirect, referrer, referrerPolicy
@@ -36,7 +64,14 @@ this.addEventListener('fetch', event => {
 	}
 
 	url = event.request.url
-	url = url + (~url.indexOf('?') ? '&' : '?') + 't=' + CACHE_NAME
+	url = url + (~url.indexOf('?') ? '&' : '?') + 't='
+
+	if (dyn || event.request.mode == 'navigate') {
+		url += ADMIN_TIME
+	} else {
+		url += UPDATE_TIME	
+	}
+	
 	
 	if (event.request.mode == 'no-cors') {
 		mode = 'no-cors'	
@@ -46,7 +81,8 @@ this.addEventListener('fetch', event => {
 	
 	let request = new Request(url, options)
 
-	//console.log(event.request.url, CACHE_NAME)
+	//console.log(event.request.url, UPDATE_TIME)
 	let responce = fetch(request)
 	event.respondWith(responce)
 });
+

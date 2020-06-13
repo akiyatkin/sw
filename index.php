@@ -1,24 +1,18 @@
 <?php
 use infrajs\path\Path;
 use infrajs\access\Access;
+use infrajs\nostore\Modified;
 
+$update_time = Access::updateTime();
+$admin_time = Access::adminTime();
 
+$my_time = max(filemtime(__FILE__), filemtime(__DIR__.'/sw.js'), filemtime(__DIR__.'/infra.js'));
 
-if (is_file('.git/index')) {
-	$etag = filemtime('.git/index');
-} else if (is_file('composer.lock')) {
-	$etag = filemtime('composer.lock');
-}
-
-$etag = max($etag, filemtime(__FILE__));
-
-/*if (!Access::debug()) {
-	$etag = max($etag, Access::adminTime());
-	//Админские измеения нужно учитывать по другому
-}*/
-
-Access::modified($etag);
-
+header('Service-Worker-Allowed: /');
 header('Content-type: application/javascript');
-echo 'const CACHE_NAME = '.$etag."\n";
+
+Modified::time($my_time);
+
+echo 'let UPDATE_TIME = '.$update_time."\n";
+echo 'let ADMIN_TIME = '.$admin_time."\n";
 Path::req('-sw/sw.js');
