@@ -52,11 +52,11 @@ this.addEventListener('fetch', event => {
 
 
 	const {
-		cache, credentials, headers, integrity, 
+		credentials, headers, integrity, 
 		method, redirect, referrer, referrerPolicy
 	} = event.request
 
-	//let cache = 'default'
+	let cache = 'default'
 
 	let options = { 
 		cache, credentials, headers, integrity, 
