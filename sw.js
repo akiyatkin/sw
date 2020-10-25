@@ -39,10 +39,13 @@ this.addEventListener('fetch', event => {
 	//??
 	if (url.origin !== location.origin) return
 	
-	dyn = false
+	let dyn = false
 	let ext = url.pathname.match(/\.(\w+$)/)
-	if (!ext || ext == 'php') dyn = true
-	else if (/.*\/$/.test(url.pathname)) dyn = true
+	if (/sw=public/.test(url.search)) {
+		dyn = false
+	} else if (!ext || ext == 'php' || /.*\/$/.test(url.pathname)) {
+		dyn = true
+	}
 	//Дефаулт public выставляется только для динамики системы
 	if (ext == 'php' && !/^\/-/.test(url.pathname)) return
 
