@@ -8,6 +8,8 @@ if (navigator.serviceWorker) {
 		//Срабатывает только если было обновление, чтобы точно не было кэша нужно перезагрузить страницу
 		//После этого момента запросы уже с новым ключём, может быть наложение двух версий
 		console.log('New version is ready. Reload please.', event.data.ADMIN_TIME)
+		location.reload()
+		//setTimeout(() => location.reload(), 1) //Как бы не было цикла...
     })
 
     if (navigator.serviceWorker.controller) {
