@@ -1,15 +1,15 @@
 
 this.addEventListener('install', event => {
-	console.log('SW install', ADMIN_TIME)
+	console.log('SW install', { ADMIN_TIME, UPDATE_TIME })
   	this.skipWaiting();
 })
 
 this.addEventListener('activate', event => {
-	console.log('SW activate', ADMIN_TIME)
+	console.log('SW activate', { ADMIN_TIME, UPDATE_TIME })
 })
 
 this.addEventListener('message', event => {
-	if (ADMIN_TIME >= event.data.ADMIN_TIME && UPDATE_TIME >= event.data.UPDATE_TIME) return
+	if (ADMIN_TIME + 10 >= event.data.ADMIN_TIME && UPDATE_TIME + 10 >= event.data.UPDATE_TIME) return
 	ADMIN_TIME = event.data.ADMIN_TIME
 	UPDATE_TIME = event.data.UPDATE_TIME
 	event.waitUntil(this.clients.matchAll().then(clientList => {
