@@ -1,28 +1,17 @@
 
 this.addEventListener('install', event => {
 	console.log('SW install', ADMIN_TIME)
-	//Мы не кэшируем в sw, а лишь подставляем актуальную метку в fetch. И метку можно сразу актуальную подставлять, потому что старая метка всё равно не гарантирует старый кэш то есть в любом случае может быть работа файлов разных версий. Так уж лучше сразу.
   	this.skipWaiting();
 })
 
 this.addEventListener('activate', event => {
 	console.log('SW activate', ADMIN_TIME)
-	event.waitUntil( this.clients.claim().then( async () => {
-		return this.clients.matchAll().then(clientList => {
-			clientList.forEach(client => {
-				client.postMessage({ADMIN_TIME, UPDATE_TIME})
-			})
-		})
-	}))
 })
-
 
 this.addEventListener('message', event => {
 	if (ADMIN_TIME >= event.data.ADMIN_TIME && UPDATE_TIME >= event.data.UPDATE_TIME) return
-
 	ADMIN_TIME = event.data.ADMIN_TIME
 	UPDATE_TIME = event.data.UPDATE_TIME
-
 	event.waitUntil(this.clients.matchAll().then(clientList => {
 		clientList.forEach(client => {
 			client.postMessage(event.data)
