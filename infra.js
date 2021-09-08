@@ -6,8 +6,10 @@ if (navigator.serviceWorker) {
 		console.log('New version is ready. Reload please.', event.data)
 		location.reload()
     })
-	navigator.serviceWorker.controller.postMessage({
-		ADMIN_TIME: AccessData.time, 
-		UPDATE_TIME: AccessData.update
-	})
+	if (navigator.serviceWorker.controller) { //В первый раз данные придут с кодом воркера
+		navigator.serviceWorker.controller.postMessage({
+			ADMIN_TIME: AccessData.time, 
+			UPDATE_TIME: AccessData.update
+		})
+	}
 }
