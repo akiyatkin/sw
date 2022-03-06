@@ -9,7 +9,8 @@ this.addEventListener('activate', event => {
 })
 
 this.addEventListener('message', event => {
-	if (ADMIN_TIME + 10 >= event.data.ADMIN_TIME && UPDATE_TIME + 10 >= event.data.UPDATE_TIME) return
+	//if (ADMIN_TIME + 10 >= event.data.ADMIN_TIME && UPDATE_TIME + 10 >= event.data.UPDATE_TIME) return
+	if (ADMIN_TIME >= event.data.ADMIN_TIME && UPDATE_TIME >= event.data.UPDATE_TIME) return
 	ADMIN_TIME = event.data.ADMIN_TIME
 	UPDATE_TIME = event.data.UPDATE_TIME
 	event.waitUntil(this.clients.matchAll().then(clientList => {
@@ -39,7 +40,7 @@ this.addEventListener('fetch', event => {
 	if (ext == 'php' && !/^\/-/.test(url.pathname)) return
 
 	//Если есть метка t, то пропускаем
-	if (/[&\?]t[=&\?]/.test(url.search)) return
+	if (/[&\?]t[=&]/.test(url.search)) return
 	if (/[&\?]t$/.test(url.search)) return
 
 
