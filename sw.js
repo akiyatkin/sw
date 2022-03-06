@@ -9,6 +9,7 @@ this.addEventListener('activate', event => {
 })
 
 this.addEventListener('message', event => {
+	//10 нужна была чтобы не было постоянной перезагрузки страницы если сайт в отладочном режиме и время админа постоянно меняется
 	//if (ADMIN_TIME + 10 >= event.data.ADMIN_TIME && UPDATE_TIME + 10 >= event.data.UPDATE_TIME) return
 	if (ADMIN_TIME >= event.data.ADMIN_TIME && UPDATE_TIME >= event.data.UPDATE_TIME) return
 	ADMIN_TIME = event.data.ADMIN_TIME
